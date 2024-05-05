@@ -6,52 +6,38 @@ O LanguageGym é um projeto de criação de uma linguagem para a disciplina de L
 
 ## EBNF
 ```
-PROGRAM             = lambda | EXERCISE_ROUTINE 
-EXERCISE_ROUTINE    = EXERCISE_INSTRUCTION | LOOP_STATEMENT | CONDITIONAL_STATEMENT | VARIABLE_DECLARATION | FUNCTION_DEFINITION | RETURN_STATEMENT 
-STATEMENT_LIST      = STATEMENT | STATEMENT_LIST STATEMENT
-STATEMENT           =  EXERCISE_ROUTINE 
-EXERCISE_INSTRUCTION = EXERCISE_NAME "(" [EXERCISE_DETAILS] ")" ";"
-EXERCISE_DETAILS    = NUMBER | MACHINE_NAME | NUMBER "," MACHINE_NAME
-LOOP_STATEMENT      = "REPEAT" "(" NUMBER ")" "{" STATEMENT_LIST "}" ";"
-CONDITIONAL_STATEMENT = "IF" "(" CONDITION ")" "{" STATEMENT_LIST "}"
-                          ["ELSE" "{" STATEMENT_LIST "}"] ";"
-VARIABLE_DECLARATION = "VAR" IDENTIFIER "=" EXPRESSION ";"
-FUNCTION_DEFINITION = "FUNCTION" IDENTIFIER "(" [PARAMETER_LIST] ")" "{" STATEMENT_LIST "}"
-PARAMETER_LIST      = IDENTIFIER { "," IDENTIFIER }
-RETURN_STATEMENT    = "RETURN" EXPRESSION ";"
-EXPRESSION          = TERM
-                      | EXPRESSION ( "+" | "-" | "*" | "/" ) TERM
-                      | "(" EXPRESSION ")"
-                      | IDENTIFIER
-                      | NUMBER
+PROGRAM = { EXERCISE_ROUTINE };
+EXERCISE_ROUTINE = ( ASSIGNMENT | PRINT | REPEAT | IF | VARIABLE_DECLARATION | EXERCISE_INSTRUCTION), "\n" ;
+ASSIGNMENT = IDENTIFIER, "=", BOOLEAN_EXPRESSION;
+PRINT = "print", "(", BOOLEAN_EXPRESSION , ")" ;
+READ = "read", "(", ")" ;
+REPEAT="repeat","(",NUMBER,")","\n",{EXERCISE_ROUTINE},;
 
-CONDITION           = EXPRESSION ( "==" | ">" | "<" ) EXPRESSION
+IF  = "if", BOOLEAN_EXPRESSION,"\n", {EXERCISE_ROUTINE}, ["else", "\n", {EXERCISE_ROUTINE}];
+VARIABLE_DECLARATION = "var", IDENTIFIER, [ "=", BOOLEAN_EXPRESSION] ;
+EXERCISE_INSTRUCTION = EXERCISE_NAME ,"(" ,NUMBER, ")";
+BOOLEAN_EXPRESSION = BOOLEAN_TERM, { ("or" ), BOOLEAN_TERM};
+BOOLEAN_TERM = REL_EXPRESSION, { ("and" ), REL_EXPRESSION};
+REL_EXPRESSION= EXPRESSION, { ("==" |">"|"<"), EXPRESSION};
 
-EXERCISE_NAME       = "PUSH_UPS"
+EXPRESSION = TERM, { ("+" | "-"|".."), TERM } ;
+TERM = FACTOR, { ("*" | "/"), FACTOR } ;
+FACTOR = (("+" | "-"|"not"), FACTOR) | NUMBER | IDENTIFIER | "(" , BOOLEAN_EXPRESSION , ")" | READ  ;
+IDENTIFIER = LETTER, { LETTER | DIGIT | "_" } ;
+NUMBER = DIGIT, { DIGIT } ;
+LETTER = ( "a" | "..." | "z" | "A" | "..." | "Z" ) ;
+DIGIT = ( "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "0" ) ; 
+
+EXERCISE_NAME       = ("PUSH_UPS"
                       | "SQUATS"
                       | "PLANK"
                       | "CRUNCHES"
-                      | "LUNGES"
-MACHINE_NAME        = "EXTENSORA"
-                      | "FLEXORA"
-                      | "SUPINO"
-                      | "PULLDOWN"
-                      | "REMADA"
-                      | "LEG_PRESS"
-                      | "LEG_CURL"
-                      | "LEG_EXTENSION"
-                      | "SHOULDER_PRESS"
-                      | "BICEPS_CURL"
-                      | "TRICEPS_EXTENSION"
-IDENTIFIER          = LETTER { LETTER | DIGIT | "_" }
-NUMBER              = DIGIT { DIGIT }
-LETTER              = "A" | "B" | ... | "Z" | "a" | "b" | ... | "z"
-DIGIT               = "0" | "1" | ... | "9"
-
+                      | "LUNGES");
 ```
 
 ## Exemplos
-```var sets = 3;
+```
+var sets = 3;
 var squats_per_set = 15;
 
 repeat(sets) {
@@ -65,15 +51,9 @@ if (squats_per_set > 10) {
     crunches(20);
 }
 
-function custom_routine(reps) {
-    repeat(reps) {
-        push_ups(10);
-    }
-}
-
 custom_routine(3);
 ```
 
 
-Neste exemplo, definimos variáveis para o número de séries (sets) e o número de agachamentos por série (squats_per_set). Em seguida, usamos instruções de loop (repeat) e condicionais (if-else) para criar uma rotina de exercícios dinâmica. Também definimos uma função personalizada (custom_routine) que executa flexões (push_ups) um determinado número de vezes.
+Neste exemplo, definimos variáveis para o número de séries (sets) e o número de agachamentos por série (squats_per_set). Em seguida, usamos instruções de loop (repeat) e condicionais (if-else) para criar uma rotina de exercícios dinâmica.
 
