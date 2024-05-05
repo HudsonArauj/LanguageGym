@@ -20,7 +20,7 @@ BOOLEAN_EXPRESSION = BOOLEAN_TERM, { ("or" ), BOOLEAN_TERM};
 BOOLEAN_TERM = REL_EXPRESSION, { ("and" ), REL_EXPRESSION};
 REL_EXPRESSION= EXPRESSION, { ("==" |">"|"<"), EXPRESSION};
 
-EXPRESSION = TERM, { ("+" | "-"|".."), TERM } ;
+EXPRESSION = TERM, { ("+" | "-"), TERM } ;
 TERM = FACTOR, { ("*" | "/"), FACTOR } ;
 FACTOR = (("+" | "-"|"not"), FACTOR) | NUMBER | IDENTIFIER | "(" , BOOLEAN_EXPRESSION , ")" | READ  ;
 IDENTIFIER = LETTER, { LETTER | DIGIT | "_" } ;
