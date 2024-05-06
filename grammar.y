@@ -2,97 +2,110 @@
 #include <stdio.h>
 #include <stdlib.h>
 extern int yylex();
-void yyerror(const char *s);
+extern void yyerror(const char *s);
 %}
 
-%union {
-    int num;
-    char *str;
-}
-
-%token <num> NUMBER
-%token <str> IDENTIFIER EXERCISE_NAME
-%token VAR PRINT READ REPEAT IF ELSE EQ GT LT PLUS MINUS MULT DIV LPAREN RPAREN COMMA SEMICOLON
-
-%type <num> BOOLEAN_EXPRESSION EXPRESSION TERM FACTOR REL_EXPRESSION
-%type <str> BOOLEAN_TERM ASSIGNMENT PRINT_STATEMENT READ_STATEMENT REPEAT_STATEMENT IF_STATEMENT ELSE_CLAUSE VARIABLE_DECLARATION EXERCISE_INSTRUCTION EXERCISE_ROUTINE
+%token IF 
+%token ELSE 
+%token PRINT 
+%token REPEAT 
+%token VAR 
+%token READ 
+%token LPAREN 
+%token RPAREN 
+%token LBRACE 
+%token RBRACE 
+%token COMMA 
+%token EQ 
+%token GT 
+%token LT 
+%token AND 
+%token OR 
+%token PLUS 
+%token MINUS 
+%token MULT 
+%token DIV 
+%token ASSIGN 
+%token NOT 
+%token INT 
+%token STRING 
+%token IDENTIFIER 
+%token NEWLINE 
+%token PUSH_UPS 
+%token SQUATS 
+%token PLANK 
+%token CRUNCHES LUNGES
 
 %%
 
-program: /* empty */ | program exercise_routine;
+program: EXERCISE_ROUTINE
+        | program EXERCISE_ROUTINE;
 
-exercise_routine: assignment SEMICOLON
-                | print_statement SEMICOLON
-                | read_statement SEMICOLON
-                | repeat_statement SEMICOLON
-                | if_statement SEMICOLON
-                | variable_declaration SEMICOLON
-                | exercise_instruction SEMICOLON;
+block : NEWLINE EXERCISE_ROUTINES ;
 
-assignment: IDENTIFIER '=' BOOLEAN_EXPRESSION;
+EXERCISE_ROUTINES : EXERCISE_ROUTINE
+                  | EXERCISE_ROUTINES EXERCISE_ROUTINE ;
 
-print_statement: PRINT LPAREN BOOLEAN_EXPRESSION RPAREN;
+EXERCISE_ROUTINE : assign
+                 | print
+                 | repeat
+                 | if  
+                 | exercise_instruction ;
 
-read_statement: READ LPAREN RPAREN;
+assign : IDENTIFIER ASSIGN bexpression NEWLINE
+       | VAR IDENTIFIER ASSIGN bexpression NEWLINE
+       | VAR IDENTIFIER NEWLINE ;
 
-repeat_statement: REPEAT LPAREN NUMBER RPAREN statement_list;
+print : PRINT LPAREN bexpression RPAREN NEWLINE ;
 
-if_statement: IF BOOLEAN_EXPRESSION statement_list else_clause;
+repeat : REPEAT LPAREN INT RPAREN LBRACE block RBRACE NEWLINE 
+       | REPEAT LPAREN IDENTIFIER RPAREN LBRACE block RBRACE NEWLINE;
 
-else_clause: /* empty */
-           | ELSE statement_list;
+if : IF LPAREN bexpression RPAREN LBRACE block RBRACE ELSE LBRACE block RBRACE NEWLINE
+   | IF LPAREN bexpression RPAREN block NEWLINE ;
 
-variable_declaration: VAR IDENTIFIER '=' BOOLEAN_EXPRESSION;
+bexpression : bexpression OR bterm
+            | bterm ;
 
-exercise_instruction: EXERCISE_NAME LPAREN NUMBER RPAREN;
+bterm : bterm AND rexpression
+      | rexpression ;
 
-statement_list: /* empty */ | statement_list statement;
+exercise_instruction : PUSH_UPS LPAREN INT RPAREN NEWLINE
+                     | SQUATS LPAREN INT RPAREN NEWLINE
+                     | PLANK LPAREN INT RPAREN NEWLINE
+                     | CRUNCHES LPAREN INT RPAREN NEWLINE
+                     | LUNGES LPAREN INT RPAREN NEWLINE ;
 
-statement: assignment
-         | print_statement
-         | read_statement
-         | repeat_statement
-         | if_statement
-         | variable_declaration
-         | exercise_instruction;
+rexpression : rexpression EQ expression
+            | rexpression GT expression
+            | rexpression LT expression
+            | expression ;
 
-BOOLEAN_EXPRESSION: BOOLEAN_TERM
-                   | BOOLEAN_EXPRESSION OR BOOLEAN_TERM;
+expression : expression PLUS term
+           | expression MINUS term
+           | term ;
 
-BOOLEAN_TERM: REL_EXPRESSION
-            | BOOLEAN_TERM AND REL_EXPRESSION;
+term : term MULT factor
+     | term DIV factor
+     | factor ;
 
-REL_EXPRESSION: EXPRESSION
-              | EXPRESSION EQ EXPRESSION
-              | EXPRESSION GT EXPRESSION
-              | EXPRESSION LT EXPRESSION;
-
-EXPRESSION: TERM
-          | EXPRESSION PLUS TERM
-          | EXPRESSION MINUS TERM;
-
-TERM: FACTOR
-    | TERM MULT FACTOR
-    | TERM DIV FACTOR;
-
-FACTOR: MINUS FACTOR
-      | PLUS FACTOR
-      | NOT FACTOR
-      | NUMBER
-      | IDENTIFIER
-      | LPAREN BOOLEAN_EXPRESSION RPAREN
-      | READ;
-
-NOT: "not";
-
-OR: "or";
-
-AND: "and";
+factor : PLUS factor
+       | MINUS factor
+       | NOT factor
+       | INT 
+       | STRING 
+       | LPAREN bexpression RPAREN
+       | IDENTIFIER 
+       | READ LPAREN RPAREN ;
 
 %%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s\n", s);
+    extern int yylineno;
+    extern char *yytext;
+
+    /* mensagem de erro exibe o símbolo que causou erro e o número da linha */
+    printf("\nErro (%s): símbolo \"%s\" (linha %d)\n", s, yytext, yylineno);
 }
 
 int main() {

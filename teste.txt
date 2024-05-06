@@ -1,0 +1,12 @@
+var sets = 3;
+var squats_per_set = 15;
+
+repeat(sets) {
+    print(1)
+}
+
+if (squats_per_set > 10) {
+    print("You did a lot of squats!");
+} else {
+    print("Not enough squats!");
+}

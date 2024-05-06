@@ -1,3 +1,6 @@
+
+# Diagrama
+<div style="text-align:center"><img src="diagrama/diagrama.png" /></div>
 # LanguageGym
 
 ## Descrição
@@ -11,9 +14,9 @@ EXERCISE_ROUTINE = ( ASSIGNMENT | PRINT | REPEAT | IF | VARIABLE_DECLARATION | E
 ASSIGNMENT = IDENTIFIER, "=", BOOLEAN_EXPRESSION;
 PRINT = "print", "(", BOOLEAN_EXPRESSION , ")" ;
 READ = "read", "(", ")" ;
-REPEAT="repeat","(",NUMBER,")","\n",{EXERCISE_ROUTINE},;
+REPEAT="repeat","(",NUMBER,")","\n","{",{EXERCISE_ROUTINE},"}",;
 
-IF  = "if", BOOLEAN_EXPRESSION,"\n", {EXERCISE_ROUTINE}, ["else", "\n", {EXERCISE_ROUTINE}];
+IF  = "if", BOOLEAN_EXPRESSION,"\n", "{", {EXERCISE_ROUTINE},"}", ["else", "\n",   "{",{EXERCISE_ROUTINE},"}"];
 VARIABLE_DECLARATION = "var", IDENTIFIER, [ "=", BOOLEAN_EXPRESSION] ;
 EXERCISE_INSTRUCTION = EXERCISE_NAME ,"(" ,NUMBER, ")";
 BOOLEAN_EXPRESSION = BOOLEAN_TERM, { ("or" ), BOOLEAN_TERM};

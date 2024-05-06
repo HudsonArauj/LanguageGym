@@ -1,45 +1,82 @@
 %{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "y.tab.h"
-%}
 
+char* yyval;
+
+%}
+%option yylineno
 %option noyywrap
 
+
+IF if
+ELSE else
+END end
+PRINT print
+REPEAT repeat
+READ read
+VAR var
+LPAREN (
+RPAREN )
+LBRACE {
+RBRACE }
+COMMA ,
+EQ ==
+GT >
+LT <
+AND and
+OR or
+PLUS +
+MINUS -
+MULT *
+DIV /
+ASSIGN =
+NOT not
+INT [0-9]
+STRING \"([^\\\"]|\\.)*\" 
+IDENTIFIER [a-zA-Z_][a-zA-Z0-9_]*
+NEWLINE \n
+
+
 %%
 
-[ \t\n]         ; // Ignorar espaços em branco e novas linhas
+[ \t]            ; /* Ignora espaços em branco e tabulações */
+"if"             { yyval = strdup(yytext); return IF; }
+"else"           { yyval = strdup(yytext); return ELSE; }
+"print"         { yyval = strdup(yytext); return PRINT; }
+"repeat"        { yyval = strdup(yytext); return REPEAT; }
+"read"           { yyval = strdup(yytext); return READ; }
+"var"           { yyval = strdup(yytext); return VAR; }
+"int"            { yyval = strdup(yytext); return INT; }
+"str"            { yyval = strdup(yytext); return STRING; }
+"("              { yyval = strdup(yytext); return LPAREN; }
+")"              { yyval = strdup(yytext); return RPAREN; }
+"{"              { yyval = strdup(yytext); return LBRACE; }
+"}"              { yyval = strdup(yytext); return RBRACE; }
+","              { yyval = strdup(yytext); return COMMA; }
+"=="             { yyval = strdup(yytext); return EQ; }
+">"              { yyval = strdup(yytext); return GT; }
+"<"              { yyval = strdup(yytext); return LT; }
+"and"            { yyval = strdup(yytext); return AND; }
+"or"             { yyval = strdup(yytext); return OR; }
+"+"              { yyval = strdup(yytext); return PLUS; }
+"-"              { yyval = strdup(yytext); return MINUS; }
+"*"              { yyval = strdup(yytext); return MULT; }
+"/"              { yyval = strdup(yytext); return DIV; }
+"="              { yyval = strdup(yytext); return ASSIGN; }
+"not"            { yyval = strdup(yytext); return NOT; }
 
-"var"           { return VAR; }
-"print"         { return PRINT; }
-"read"          { return READ; }
-"repeat"        { return REPEAT; }
-"if"            { return IF; }
-"else"          { return ELSE; }
-"PUSH_UPS"      { yylval.str = strdup(yytext); return EXERCISE_NAME; }
-"SQUATS"        { yylval.str = strdup(yytext); return EXERCISE_NAME; }
-"PLANK"         { yylval.str = strdup(yytext); return EXERCISE_NAME; }
-"CRUNCHES"      { yylval.str = strdup(yytext); return EXERCISE_NAME; }
-"LUNGES"        { yylval.str = strdup(yytext); return EXERCISE_NAME; }
-"=="            { return EQ; }
-">"             { return GT; }
-"<"             { return LT; }
-"+"             { return PLUS; }
-"-"             { return MINUS; }
-"*"             { return MULT; }
-"/"             { return DIV; }
-"("             { return LPAREN; }
-")"             { return RPAREN; }
+[0-9]+                 { yyval = strdup(yytext); return INT; }
+[a-zA-Z_][a-zA-Z0-9_]* { yyval = strdup(yytext); return IDENTIFIER; }
+\"([^\\\"]|\\.)*\"     { yyval = strdup(yytext); return STRING; }
 
-[a-zA-Z_][a-zA-Z0-9_]*   { yylval.str = strdup(yytext); return IDENTIFIER; }
-[0-9]+          { yylval.num = atoi(yytext); return NUMBER; }
+#.?\n   ; // Ignora comentários de uma linha */
+"\\\n"  ; /* Ignora quebras de linha precedidas por \ */
 
-.               { yyerror("Invalid character"); }
+\n      { yyval = strdup(yytext); return NEWLINE; }
+.       { yyval = strdup(yytext); printf("%s",yyval); }
 
 %%
 
-void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s\n", s);
-}
-
-int yywrap(void) {
-    return 1;
-}
