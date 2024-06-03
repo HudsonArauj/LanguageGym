@@ -54,7 +54,6 @@ if (squats_per_set > 10) {
     crunches(20);
 }
 
-custom_routine(3);
 ```
 
 

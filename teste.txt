@@ -2,11 +2,12 @@ var sets = 3;
 var squats_per_set = 15;
 
 repeat(sets) {
-    print(1)
+    squats(squats_per_set);
+    plank(30);
 }
 
 if (squats_per_set > 10) {
-    print("You did a lot of squats!");
+    lunges(12);
 } else {
-    print("Not enough squats!");
+    crunches(20);
 }
